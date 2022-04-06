@@ -1,28 +1,44 @@
 #![no_std] // don't link the Rust standard library
 #![no_main] // disable all Rust-level entry points
+#![reexport_test_harness_main = "test_main"]
+#![feature(custom_test_frameworks)]
+#![test_runner(kev_os::test_runner)]
 
 use core::panic::PanicInfo;
 
-static KEVERO: &[u8] = b"Hello stranger! Welcome to the brand new KevOS, your new home :)";
+use kev_os::println;
 
 #[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
     // this function is the entry point, since the linker looks for a function
     // named `_start` by default
+    // use core::fmt::Write;
 
-    let vga_buffer = 0xb8000 as *mut u8;
+    // vga_buffer::WRITER
+    //     .lock()
+    //     .write_str("Hello stranger! Welcome to the brand new KevOS, your new home :)")
+    //     .unwrap();
 
-    for (i, &byte) in KEVERO.iter().enumerate() {
-        unsafe {
-            *vga_buffer.offset(i as isize * 2) = byte;
-            *vga_buffer.offset(i as isize * 2 + 1) = 0xb;
-        }
-    }
+    println!("Hello stranger! Welcome to the brand new KevOS, your new home :)");
+
+    #[cfg(test)]
+    test_main();
+
     loop {}
 }
 
 /// This function is called on panic.
+#[cfg(not(test))]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
+    use kev_os::print;
+
+    print!("{}", _info);
     loop {}
+}
+
+#[cfg(test)]
+#[panic_handler]
+fn panic(_info: &PanicInfo) -> ! {
+    kev_os::test_panic_handler(_info)
 }
