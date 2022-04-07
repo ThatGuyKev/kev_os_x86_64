@@ -21,6 +21,11 @@ pub extern "C" fn _start() -> ! {
 
     println!("Hello stranger! Welcome to the brand new KevOS, your new home :)");
 
+    kev_os::init(); // initialize interrupts
+
+    // invoke a breakpoint exception
+    x86_64::instructions::interrupts::int3();
+
     #[cfg(test)]
     test_main();
 
