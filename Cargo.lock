@@ -24,6 +24,7 @@ checksum = "de78decc37247c7cfac5dbf3495c7298c6ac97cb355161caa7e15969c6648e6c"
 name = "kev_os"
 version = "0.1.0"
 dependencies = [
+ "bit_field",
  "bootloader",
  "lazy_static",
  "spin",
